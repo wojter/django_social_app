@@ -32,7 +32,7 @@ def upload(request):
         return HttpResponse('<h1>Upload View</h1>')
 
 
-@login_required
+@login_required(login_url='signin')
 def like_post(request):
     username = request.user.username
     post_id = request.GET.get('post_id')
@@ -53,6 +53,22 @@ def like_post(request):
         post.no_of_likes = post.no_of_likes - 1
         post.save()
         return redirect('/')
+
+
+@login_required(login_url='signin')
+def profile(request, pd):
+    user_object = User.objects.get(username=pd)
+    user_profile = Profile.objects.get(user=user_object)
+    user_posts = Post.objects.filter(user=pd)
+    user_post_length = len(user_posts)
+
+    context = {
+        'user_object': user_object,
+        'user_profile': user_profile,
+        'user_posts': user_posts,
+        'user_post_length': user_post_length,
+    }
+    return render(request, 'profile.html', context)
 
 
 @login_required(login_url='signin')
